@@ -1,0 +1,253 @@
+﻿@model CourseWorkProject.Areas.Staff.Data.ExceptionVM
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Staff/Views/Shared/_StaffLayout.cshtml";
+}
+    <div class="report-container">
+        <h1>STATISTICS</h1>
+        <div class="chart-container" style="height:300px">
+            <canvas id="myChart1"></canvas>
+        </div>
+        <div id="table-responsive-lg">
+            <table class="table table-hover">
+                <thead style="text-align:center">
+                    <tr class="table-primary">
+                        <th scope="col">Date</th>
+                        <th scope="col">Total Messages</th>
+                        <th scope="col">Percentage</th>
+                    </tr>
+                </thead>
+                <tbody id="chart-data1" style="text-align:center">
+                </tbody>
+            </table>
+        </div>
+        <div class="chart-container" style="height:400px">
+            <canvas id="myChart2"></canvas>
+        </div>
+        <div id="table-responsive-lg">
+            <table class="table table-hover">
+                <thead style="text-align:center">
+                    <tr class="table-primary">
+                        <th scope="col">Personal Tutor</th>
+                        <th scope="col">number of Message</th>
+                        <th scope="col">Percentage</th>
+                    </tr>
+                </thead>
+                <tbody id="chart-data2" style="text-align:center">
+                </tbody>
+            </table>
+        </div>
+        <hr />
+        <h1><b>EXCEPTION REPORTS</b></h1>
+        <div class="table-responsive">
+            <h3>Student Without Personal Tutor</h3>
+            <table class="table table-striped table-sm">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.StdWithoutTutor)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(h => item.id)</td>
+                            <td>@Html.DisplayFor(h => item.Profile.Name)</td>
+                        </tr>
+                    }
+                    <tr>
+                        <th>Total:</th>
+                        <td><b>@Model.StdWithoutTutor.Count</b></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-responsive">
+            <h3>Studennt Without Interact</h3>
+            <table class="table table-striped table-sm">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.StdWithoutInteract)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(h => item.id)</td>
+                            <td>@Html.DisplayFor(h => item.Profile.Name)</td>
+                        </tr>
+                    }
+                    <tr>
+                        <th>Total:</th>
+                        <td><b>@Model.StdWithoutInteract.Count</b></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            console.log('ready!!');
+            $.ajax({
+                type: 'GET',
+                url: '/Staff/Report/DashboarData',
+                data: {},
+                success: function (result) {
+                    debugger
+                    console.log(result);
+                    var data1 = result.Report;
+                    var dateString = [];
+                    var dateCount = [];
+                    for (var item of data1) {
+                        dateString.push(item.DateString);
+                        dateCount.push(item.MessageCount);
+                    }
+                    var data2 = result.Lecture;
+                    var lect = [];
+                    var lectCount = [];
+                    for (var item of data2) {
+                        lect.push(item.Name);
+                        lectCount.push(item.Count);
+                    }
+
+
+                    var ctx1 = document.getElementById('myChart1').getContext('2d');
+                    chart1 = new Chart(ctx1, {
+                        // The type of chart we want to create
+                        type: 'bar',
+
+                        // The data for our dataset
+                        data: {
+                            labels: dateString,
+                            datasets: [{
+                                label: "Messages",
+                                backgroundColor: 'rgb(255, 99, 132)',
+                                borderColor: 'rgb(255, 99, 132)',
+                                data: dateCount,
+                                borderWidth: 0.5
+                            }]
+                        },
+
+                        // Configuration options go here
+                        options: {
+                            title: {
+                                display: true,
+                                text: 'Number of Message per day',
+                                position: 'top',
+                                fontSize: 18,
+                                fontColor: '#111',
+                                padding: 20
+                            },
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+
+                    var num = 0;
+                    var total = 0;
+                    for (var item of data1) {
+                        num += item.MessageCount;
+                        total = num;
+                    }
+                    for (var item of data1) {
+                        $("#chart-data1").append(
+                            "<tr>" + "<td>" + item.DateString + "</td>"
+                            + "<td>" + item.MessageCount + "</td>"
+                            + "<td>" + Math.round(((item.MessageCount * 100)) / total) + " " + "%" + "</td>"
+                            + "</tr>"
+                        )
+                    }
+
+
+
+                    var ctx2 = document.getElementById('myChart2').getContext('2d');
+                    chart2 = new Chart(ctx2, {
+                        // The type of chart we want to create
+                        type: 'pie',
+
+                        // The data for our dataset
+                        data: {
+                            labels: lect,
+                            datasets: [{
+                                label: "Messages",
+                                backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"],
+                                data: lectCount,
+                                borderWidth: 0.5,
+                                borderColor: '#ddd'
+                            }],
+
+                        },
+
+                        // Configuration options go here
+                        options: {
+                            title: {
+                                display: true,
+                                text: 'Number of Message for each personal Tutor',
+                                position: 'top',
+                                fontSize: 18,
+                                fontColor: '#111',
+                                padding: 20
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 20,
+                                    fontColor: '#111',
+                                    padding: 15
+                                }
+                            },
+
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                datalabels: {
+                                    color: '#111',
+                                    textAlign: 'center',
+                                    font: {
+                                        lineHeight: 1.6
+                                    }
+
+                                }
+                            }
+
+
+
+                        }
+                    });
+                    debugger
+                    var number = 0;
+                    var total2 = 0;
+                    for (var item of data2) {
+                        number += item.Count;
+                        total2 = number;
+                    }
+                    for (var item of data2) {
+                        $("#chart-data2").append(
+                            "<tr>" + "<td>" + item.Name + "</td>"
+                            + "<td>" + item.Count + "</td>"
+                            + "<td>" + Math.round(((item.Count * 100)) / total2) + " " + "%" + "</td>"
+                            + "</tr>"
+                        )
+                    }
+                }
+            })
+        })
+    </script>
+}
+

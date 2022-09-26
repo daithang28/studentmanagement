@@ -1,0 +1,86 @@
+﻿@model CourseWorkProject.ViewModels.BlogComVM
+@{
+    ViewBag.Title = "BlogDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="blog-form">
+    <h1  class="Blog-Title">@Model.Blog.Title</h1>
+    <div class="Blog-Detail">
+        <span hidden class="blogId">@Model.Blog.id</span>
+        <span>
+            <i class="fas fa-clock"></i>
+            <span> <i class="fa fa-clock-o"></i>@Model.Blog.CreateDate</span>
+        </span>
+        <span>
+            
+            <b><i class="fa fa-user"></i> @Model.Blog.Creator</b>
+        </span>
+    </div>
+    <div class="Blog-Content">
+        <p>@Model.Blog.Content</p>
+        @if (Model.Blog.FileName != null)
+        {
+            <a href="@Url.Content("~/UploadFiles/" + Model.Blog.FileName)">@Model.Blog.FileName</a>
+        }
+    </div>
+</div>
+<hr />
+<div>
+    <h2>Comments</h2>
+    <div class="form-group comment-group">
+        <input type="text" placeholder="Add your comment..." class="form-control form-control-lg commentString" />
+        <button class="commentButton"><i class="fa fa-paper-plane"></i></button>
+    </div>
+    <div class="com-list">
+
+    </div>
+    @foreach (var item in Model.Comments)
+    {
+        <div class="card comment-box">
+            <div class="card-header user-comment" style="background-color:#fff">
+                <span><b>@item.User.Profile.Name</b></span>
+                <p>
+                    @item.Content
+                </p>
+            </div>
+        </div>
+    }
+</div>
+@section scripts{
+    <script>
+        $('.commentButton').on('click', function () {
+            debugger
+            var blogId = @Model.Blog.id;
+            var content = $('.commentString').val();
+            var dateTimeNow = new Date();
+            var name = "@HttpContext.Current.User.Identity.Name";
+            var comment = {  
+                    Content: content,  
+                    CreateDate: dateTimeNow.toLocaleString(),
+                    Creator: name,
+                }; 
+           
+                $.ajax({
+                    type: 'POST',
+                    url: "/Blog/AddComment",
+                    data: { comment, blogId },
+                    success: function (result) {
+                        console.log('Success');
+                        $('.comment-box').append(
+
+                            "<div class='card-header user-comment' style='background-color:#fff'>"
+                            + "<span>" + "<b>" + result.Creator + "</b>"
+                            + "<p>" + result.Content + "</p>"
+                            + "</span>"
+                            + "</div>"
+
+                        );
+                        content.val("");
+                    }
+                })
+            
+        })
+    </script>
+    }
+

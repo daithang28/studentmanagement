@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+    <link href="~/Style/ContentStyle.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="navbar navbar-expand-sm navbar-dark fixed-top bg-primary">
+        <div class="container">
+            <div class="navbar-header">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                @Html.ActionLink("eTutoring", "Index", "Blog", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse" id="navbarSupportedContent">
+                <ul class="nav navbar-nav mr-auto">
+                    <li class="nav-item">@Html.ActionLink("Idea", "Index", "Blog",null, new { @class = "nav-link" })</li>
+                    @*<li class="nav-item">@Html.ActionLink("Chat", "Index", "Chat",null, new { @class = "nav-link" })</li>*@
+                    @*<li class="nav-item">@Html.ActionLink("Dashboard", "Index", "Dashboard",null, new { @class = "nav-link" })</li>*@
+                </ul>
+                @if (Request.IsAuthenticated)
+                {
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="nav-item">@Html.ActionLink(HttpContext.Current.User.Identity.Name, "Index", "Mangae", new { @class = "nav-link" })</li>
+                        <li class="nav-item"><a href="~/Account/SignOut" class="nav-link">Log Out</a></li>
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

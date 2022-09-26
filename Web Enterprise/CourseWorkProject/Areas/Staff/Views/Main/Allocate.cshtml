@@ -1,0 +1,76 @@
+﻿@model List<CourseWorkProject.Models.User>
+@{
+    ViewBag.Title = "Allocate";
+    Layout = "~/Areas/Staff/Views/Shared/_StaffLayout.cshtml";
+
+    List<SelectListItem> List = new List<SelectListItem>();
+    foreach (var lect in Model)
+    {
+        if (lect.Role.id == 2)
+        {
+            List.Add(new SelectListItem { Text = lect.Profile.Name, Value = lect.id.ToString() });
+        }
+    }
+}
+
+@using (Html.BeginForm("Allocate", "Main", FormMethod.Post))
+{
+    <div id="student-container table-responsive">
+        <table class="table table-striped table-hover">
+            <thead style="margin-bottom:20px;" class="thead-dark">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Avatar</th>
+                    <th scope="col">Birthday</th>
+                    <th scope="col">Email</th>
+                    <th scope="col"><input type="checkbox" id="checkall" /></th>
+                    @*<th>
+                        @Html.DropDownList("Id", (SelectList)ViewBag.Lect, "Select Tutor ", new { @class = "form-control" })
+                    </th>*@
+
+                    <th scope="col">
+                        @Html.DropDownList("Id", new SelectList(List,"Value","Text"), "Select Tutor ", new { @class = "form-control" })
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var stu in Model )
+                {
+                    if (stu.Role.id == 1)
+                    {
+                        <tr id="stu-info">
+                            <th style="width:200px" scope="row">@Html.DisplayFor(h => stu.Profile.id)</th>
+                            <td style="width:200px">@Html.DisplayFor(h => stu.Profile.Name)</td>
+                            <td style="width:200px"><img src="@Url.Content("~/images/" + stu.Profile.img)" style="width:100px" /></td>
+                            <td style="width:200px">@Html.DisplayFor(h => stu.Profile.Birthday)</td>
+                            <td style="width:200px">@Html.DisplayFor(h => stu.Profile.Email)</td>
+                            <th><input type="checkbox" name="check" value="@stu.id" /></th>
+                            <td style="width:200px">@Html.DisplayFor(h => stu.GroupMember.Group.GroupName)</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <input type="submit" value="Allocate" class="btn btn-primary" style="width:200px" />
+    </div>
+}
+
+@section scripts{
+    <script>
+        $(function () {
+            $("#checkall").change(function () {
+                debugger
+                if ($(this).prop("checked") == true) {
+                    $("input[name=check]").prop("checked", true);
+                }
+                else {
+                    $("input[name=check]").prop("checked", false);
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,215 @@
+﻿@model List<CourseWorkProject.Models.Blog>
+@using CourseWorkProject.Constant 
+@{
+    ViewBag.Title = "Tutor idea";
+    Layout = "~/Areas/Tutor/Views/Shared/_TutorLayout.cshtml";
+    var currentUser = ViewBag.currentUser;
+}
+
+@Html.ActionLink("Create new Idea", "TutorCreateBlog", "Blog", new { @class = "btn btn-primary", id = "btn-create" })
+@if (Model.Count == 0)
+{
+    <h2> @ViewBag.Empty</h2>
+}
+else
+{
+    foreach (var blog in Model)
+    {
+        var like = blog.Likes.FirstOrDefault(x => x.User.id == currentUser.id);
+        <div class="panel panel-default">
+            <div class="card">
+                <div class="card-header">
+                    <span><b>@blog.Creator</b></span>
+                    <span class="create-date">
+                        <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                        <span><time datetime="@blog.CreateDate">@blog.CreateDate</time></span>
+
+                    </span>
+                </div>
+                <div class="card-body" style="line-height:40px;">
+                     <div class="row">
+                         <div class="col-md-10">
+                             <a href="/Tutor/TutorBlog/BlogDetail?Id=@blog.id"><span class="badge badge-warning" style="font-size:17px;">@blog.Title</span></a><br />
+                             <p>@blog.Content  <a href="/Tutor/TutorBlog/BlogDetail?Id=@blog.id">Continue reading &rarr;</a></p>
+                             @if (blog.FileName != null)
+                             {
+                         <a href="@Url.Content("~/UploadFiles/" + blog.FileName)">@blog.FileName</a>                    
+                         }
+                         <p><b>Category: @(blog.Category?.Name)</b></p>
+                         </div>
+                         <div class="col-md-2 text-center">
+                             <a class="btn btn-sm btn-info" href="/Tutor/TutorBlog/TutorUpdateBlog/@blog.id">Update</a>
+                             <a class="btn btn-sm btn-danger" href="/Tutor/TutorBlog/Delete/@blog.id">Delete</a>
+                         </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-success comment" id="btn-comment" data-id="@blog.id" value="Comment">
+                        <span class="glyphicon glyphicon-comment" aria-hidden="true"></span> Comment
+                    </button>
+                    <div class="@String.Format("{0}_{1}",blog.id,"listComment")">
+                    </div>
+                    <div class="@String.Format("{0}_{1}","Comment",blog.id)" style="border: 1px solid #f1eaea;">
+                        <div class="row mt-3">
+                            <div class="AddComment col-md-10">
+                                <input type="text" id="@string.Format("{0}_{1}", "comment", blog.id)" class="form-control" placeholder="Add a Comment ..." style="display: inline;" />
+                                <button type="button" class="btn btn-default addComment" data-id="@blog.id"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <a class="like" data-id="@blog.id" data-status="@((int)LikeStatus.Like)"><i class="fa fa-regular fa-thumbs-up fa-thumbs-up-@blog.id @(like != null && like.Status == LikeStatus.Like ? "blue" : "") " aria-hidden="true">&nbsp;@(blog.Likes == null ? 0 : blog.Likes.Count(x => x.Status == LikeStatus.Like))</i></a>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <a class="like" data-id="@blog.id" data-status="@((int)LikeStatus.Dislike)"><i class="fa fa-regular fa-thumbs-down fa-thumbs-down-@blog.id @(like != null && like.Status == LikeStatus.Dislike ? "red" : "") " aria-hidden="true">&nbsp;@(blog.Likes == null ? 0 : blog.Likes.Count(x => x.Status == LikeStatus.Dislike))</i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    }
+
+}
+
+@section scripts{
+    <script>
+        var old= "";
+        $(document).ready(function () {
+            $(".comment").on("click", function () {
+                debugger
+
+                var blogid = $(this).attr("data-id");
+                var listCommnet = $("."+blogid+"_listComment");
+                var allCommentsArea = $('<div>').addClass('allComments_' + blogid);
+                //Get all comments
+                $.ajax({
+                    url:"/Tutor/TutorBlog/GetComments",
+                    type: "GET",
+                    data: {
+                        blogid
+                    },
+                    success: function (respone) {
+                        debugger
+
+                        console.log(respone);
+                        if (old == respone) {
+                          listCommnet.html(respone);
+
+                        }
+                        else {
+                            listCommnet.html(respone);
+
+                        }
+                        old = respone;
+                        //listCommnet.append(respone);
+
+
+                    },
+                    error: function () {
+                         alert('Sorry: Comments cannot be loaded !');
+                    }
+                })
+            })
+
+            $('.addComment').on('click', function () {
+
+                var blogId = $(this).attr('data-id');
+                var commentContent = $('#comment_' + blogId).val();
+                var dateTimeNow = new Date();
+                var listCommnet = document.querySelectorAll('.card-footer')
+                var user =  "@HttpContext.Current.User.Identity.Name";
+                //alert('Hello');
+                var comment = {
+                    Content: commentContent,
+                    CreateDate: dateTimeNow.toLocaleString(),
+                    Creator: user,
+                };
+
+                $.ajax({
+
+                    type: 'POST',
+                    url: '@Url.Action("AddComment", "TutorBlog")',
+                    data: { comment, blogId },
+                    success: function (response) {
+                        debugger
+                        var today = new Date();
+                        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                        console.log(listCommnet.length)
+                        for (i = 0; i < listCommnet.length; i++) {
+                            for (k = 0; k < listCommnet[i].children.length; k++) {
+                                console.log(listCommnet[i].children.length);
+                                if (listCommnet[i].children[k].tagName == "DIV") {
+                                        /*listCommnet.append("<p>" + comment.Content + "</p>"*/;
+                                    if (listCommnet[i].children[k].className == (blogId + "_listComment"))
+                                        //listCommnet[i].children[k].append("<h2>" + comment.Content + "</h2>");
+                                        listCommnet[i].children[k].innerHTML +=
+                                            "<div" + " " + "class=" + '"card comment-box"' + ">"
+                                            + "<div" + " " + "class=" + '"card-header user-comment"'
+                                            + "style=" + '"background-color:#fff"' + ">"
+                                            + "<span>" + '<b>' + response.Creator + '</b>' + '</span>'
+                                            + "<p>" + response.Content + "</p>"
+                                            + "</div>"
+                                            + "</div>";
+                                    $('#comment_' + blogId).val("");
+                                }
+
+                            }
+                        }
+                    },
+                    error: function (response) {
+                        alert('Sorry: Something Wrong');
+                    }
+
+                });
+
+            });
+
+
+            $(".like").on("click", function (e) {
+                e.preventDefault();
+                var id = $(this).attr('data-id');
+                var status = $(this).attr('data-status');
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Like", "TutorBlog")',
+                    data: { id, status },
+                    success: function (response) {
+                        debugger;
+                        var up = '.fa-thumbs-up-' + response.id;
+                        var down = '.fa-thumbs-down-' + response.id;
+                        var likeBefor = parseInt($(up).html().replace('&nbsp;', ''));
+                        var disLikeBefor = parseInt($(down).html().replace('&nbsp;', ''));
+
+                        if (response.like > likeBefor) {
+                            $(up).addClass('blue');
+                        }
+                        else {
+                            $(up).removeClass('blue');
+                        }
+                        $(up).html('&nbsp;' + response.like);
+
+                        if (response.disLike > disLikeBefor) {
+                            $(down).addClass('red');
+                        }
+                        else {
+                            $(down).removeClass('red');
+                        }
+                        $(down).html('&nbsp;' + response.disLike);
+                    },
+                    error: function (response) {
+                        alert('Sorry: Something Wrong');
+                    }
+
+                });
+            });
+        });
+
+
+    </script>
+}
+

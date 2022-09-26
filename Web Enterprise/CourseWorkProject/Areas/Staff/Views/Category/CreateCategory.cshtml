@@ -1,0 +1,27 @@
+﻿@model CourseWorkProject.Models.Category
+@{
+    ViewBag.Title = "CreateCategory";
+    Layout = "~/Areas/Staff/Views/Shared/_StaffLayout.cshtml";
+}
+<div class="row">
+    <div class="col-lg-3"></div>
+
+    <div class="col-lg-6 blog-form">
+        @using (Html.BeginForm("CreateCategory", "Category", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <h2 style="text-align:center">Create new Category</h2>
+            <div class="form-group">
+                <b> @Html.LabelFor(h => h.Name)</b>
+
+                @Html.TextBoxFor(h => h.Name, new { @class = "form-control form-control-lg", autocomplete = "off" })
+            </div>
+            <div style="display: inline-flex">
+                <button class="btn btn-success btn-create">Create</button>
+                <a href="~/Staff/Category/Index" class="btn btn-danger btn-cancel">Cancel</a>
+            </div>
+        }
+    </div>
+
+
+</div>
+

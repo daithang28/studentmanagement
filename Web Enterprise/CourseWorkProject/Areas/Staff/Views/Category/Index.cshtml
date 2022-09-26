@@ -1,0 +1,53 @@
+﻿@model List<CourseWorkProject.Models.Category>
+@{
+    ViewBag.Title = "Category";
+    Layout = "~/Areas/Staff/Views/Shared/_StaffLayout.cshtml";
+}
+
+@Html.ActionLink("Create new Category", "CreateCategory", "Category", new { @class = "btn btn-primary", id = "btn-create" })
+@if (Model.Count == 0)
+{
+    <h2> @ViewBag.Empty</h2> 
+}
+else
+{
+    foreach (var category in Model)
+    {
+        <div class="panel panel-default">
+            <div class="card">
+                <div class="card-header">
+                    <span><b>@category.Creator</b></span>
+                    <span class="create-date">
+                        <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+                        <span><time datetime="@category.CreateDate">@category.CreateDate</time></span>
+
+                    </span>
+                </div>
+                <div class="card-body" style="line-height:40px;">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <span class="badge badge-warning" style="font-size:17px;">@category.Name</span>
+                        </div>
+                        <div class="col-md-2  text-center">
+                            <a class="btn btn-sm btn-info" href="/Staff/Category/UpdateCategory/@category.id">Update</a>
+                            @if (!category.Blogs.Any())
+                            {
+                                <a class="btn btn-sm btn-danger" href="/Staff/Category/Delete/@category.id">Delete</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+}
+@section scripts{
+    <script>
+        var old= "";
+        $(document).ready(function () {
+
+        });
+    </script>
+}
+

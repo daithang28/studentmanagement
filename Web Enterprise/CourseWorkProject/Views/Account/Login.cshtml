@@ -1,0 +1,33 @@
+﻿@model CourseWorkProject.ViewModels.LoginVM
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Empty.cshtml";
+}
+
+    <div class="form-conatiner">
+        @using (Html.BeginForm())
+        {
+            <div id="Login-title">
+                <h1><strong>Login</strong></h1>
+            </div>
+            <div id="Login-form">
+                <div>
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger", @Id = "error", @style = "font-size:16px; font-weight:bold;" })
+                </div>
+                <div class="text-field">
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })<br />
+                    @Html.TextBoxFor(model => model.Name, new { @class = "input", placeholder = Html.DisplayNameFor(h => h.Name), autocomplete = "off" })
+
+                </div>
+                <div class="text-field">
+                    @Html.ValidationMessageFor(model => model.Pass, "", new { @class = "text-danger" })<br />
+                    @Html.PasswordFor(model => model.Pass, new { @class = "input", placeholder = Html.DisplayNameFor(h => h.Pass) })
+                </div>
+                <div class="login-btn">
+                    <input type="submit" value="Login" id="submit-btn" />
+                </div>
+               
+            </div>
+        }
+    </div>
+

@@ -1,0 +1,139 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Tutor/Views/Shared/_TutorLayout.cshtml";
+}
+
+<div class="chart-container">
+    <div>
+       
+        <div class="wrap">
+            <div class="search">
+                <input type="text" name="SearchString" class="searchTerm" placeholder="Student's name" autocomplete="off"/>
+                @*<button id="btn-search">Search</button>*@
+                <button id="btn-search" class="searchButton">
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>            
+        </div>
+
+
+    </div>
+    <canvas id="myChart"></canvas>
+    <div>
+        <button class="btn-sort btn btn-primary" data-sorttype="Count">Number of Messages</button>
+        <button class="btn-sort btn btn-warning" data-sorttype="Name">Sort by Name</button>
+    </div>
+</div>
+@section scripts{
+    <script>
+        var user = "@HttpContext.Current.User.Identity.Name";
+        var chart = "";
+        $(document).ready(function () {
+            $.ajax({
+                type: "GET",
+                url: "/Tutor/TutorDashBoard/DashboardData",
+                data: {
+                     user
+                },
+                success: function (result) {
+                    debugger
+                    var senders = [];
+                    var count = [];
+                    console.log(result);
+                    for (var item of result) {
+                        senders.push(item.Name);
+                        count.push(item.MessageCount);
+                    }
+                    
+                    var ctx = document.getElementById('myChart').getContext('2d');
+                    chart = new Chart(ctx, {
+                        // The type of chart we want to create
+                        type: 'bar',
+
+                        // The data for our dataset
+                        data: {
+                            labels: senders,
+                            datasets: [{
+                                label: "Number of messages sent to Personal Lecture",
+                                backgroundColor: 'rgb(255, 99, 132)',
+                                borderColor: 'rgb(255, 99, 132)',
+                                data: count,
+                                borderWidth: 1
+                            }]
+                        },
+
+                        // Configuration options go here
+                        options: {
+                            responsive: true,
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+            }
+});
+                },
+                error: function () {
+                    alert("Fail");
+                }
+            })
+        })
+
+        $("#btn-search").on('click', function () {
+           
+            var SearchString = $("input[name=SearchString]").val();
+            $.ajax({
+                type: "GET",
+                url: "/Tutor/TutorDashBoard/DashboardData",
+                data: {
+                     user, SearchString
+                },
+                success: function (result) {
+                    debugger
+                    console.log(1);
+                    var senders = [];
+                    var count = [];
+                    console.log(result);
+                    for (var item of result) {
+                        senders.push(item.Name);
+                        count.push(item.MessageCount);
+                    }
+                    chart.data.labels = senders;
+                    chart.data.datasets[0].data = count;
+                    chart.update();
+                },
+                error: function () {
+                    alert("Fail!");
+                }
+            })
+        })
+
+        $(".btn-sort").on('click', function () {
+            var SortType = $(this).attr('data-sorttype');
+            $.ajax({
+                type: 'GET',
+                url: "/Tutor/TutorDashBoard/DashboardData",
+                data: { user, SortType },
+                success: function (result) {
+                     debugger
+                    console.log(1);
+                    var senders = [];
+                    var count = [];
+                    console.log(result);
+                    for (var item of result) {
+                        senders.push(item.Name);
+                        count.push(item.MessageCount);
+                    }
+                    chart.data.labels = senders;
+                    chart.data.datasets[0].data = count;
+                    chart.update();
+                }
+            })
+        })
+    </script>
+}
+
+

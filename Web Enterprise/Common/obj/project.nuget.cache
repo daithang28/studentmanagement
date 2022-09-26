@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "Toiqfh8uCtnu3Qok1H59Mxnjs7Oky4PZVzTY+NpbcYUP6RA3wA0AnV8PXnyD+P5598kgcyOWXEIA6NiCTgayTA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\ASUS\\Desktop\\Coursework2020-master\\Common\\Common.csproj",
+  "expectedPackageFiles": [
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,9 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<p>Hello @HttpContext.Current.User.Identity.Name</p>
+@if (User.IsInRole("Student"))
+{
+    <p>@HttpContext.Current.User.Identity.Name is Student</p>
+}

@@ -1,0 +1,41 @@
+﻿@model CourseWorkProject.ViewModels.BlogVM
+@{
+    ViewBag.Title = "TutorUpdateIdea";
+    Layout = "~/Areas/Staff/Views/Shared/_StaffLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-3"></div>
+
+    <div class="col-lg-6 blog-form">
+        @using (Html.BeginForm("TutorUpdateBlog", "TutorBlog", FormMethod.Post, new { enctype = "multipart/form-data", id = "TutorUpdateBlog" }))
+        {
+            <h2 style="text-align:center">Update new Idea</h2>
+            @Html.HiddenFor(h => h.id)
+            <div class="form-group">
+                <b> @Html.LabelFor(h => h.Title)</b>
+
+                @Html.TextBoxFor(h => h.Title, new { @class = "form-control form-control-lg", autocomplete = "off" })
+            </div>
+            <div class="form-group">
+                <b>@Html.LabelFor(h => h.Content)</b>
+
+                @Html.TextAreaFor(h => h.Content, new { @class = "form-control form-control-lg" })
+            </div>
+            <div class="form-group">
+                <b>@Html.LabelFor(h => h.Category)</b>
+
+                @Html.DropDownListFor(h => h.Category, new SelectList(ViewBag.Categories, "Id", "Name"), new { @class = "form-control" })
+            </div>
+            <div style="display: inline-flex">
+                <button class="btn btn-success btn-create">Update</button>
+                <a href="~/Staff/TutorBlog/Index" class="btn btn-danger btn-cancel">Cancel</a>
+            </div>
+
+
+        }
+    </div>
+
+
+</div>
+

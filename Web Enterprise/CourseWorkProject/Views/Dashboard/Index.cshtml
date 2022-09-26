@@ -1,0 +1,68 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="chart-container">
+    <canvas id="myChart"></canvas>
+</div>
+@section scripts{
+    <script>
+        var user = "@HttpContext.Current.User.Identity.Name";
+        $(document).ready(function () {
+            $.ajax({
+                type: "GET",
+                url: "/Dashboard/LoadDashboard",
+                data: {
+                     user
+                },
+                success: function (result) {
+                    debugger
+                    console.log(result);
+                    //var dates = [];
+                    //var date = result.MessageCreateDate;
+                    //for (var value of date) {
+                    //    var item = value.substr(0, 10);
+                    //    dates.push(item);
+                    //}
+                    var dates = result.MessageCreateDate;
+                    var count = result.MessageCount;
+                    var ctx = document.getElementById('myChart').getContext('2d');
+                    var chart = new Chart(ctx, {
+                        // The type of chart we want to create
+                        type: 'bar',
+
+                        // The data for our dataset
+                        data: {
+                            labels: dates,
+                            datasets: [{
+                                label: "Number of messages sent to Personal Lecture",
+                                backgroundColor: 'rgb(255, 99, 132)',
+                                borderColor: 'rgb(255, 99, 132)',
+                                data: count,
+                                borderWidth: 1
+                            }]
+                        },
+
+                        // Configuration options go here
+                        options: {
+                            responsive: true,
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+            }
+});
+                },
+                error: function () {
+                    alert("Fail");
+                }
+            })
+        })
+        
+    </script>
+    }
